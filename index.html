@@ -198,5 +198,22 @@ try{const saved=JSON.parse(localStorage.getItem('drl-demo-profile')||'null');if(
 document.getElementById('refreshBoard').addEventListener('click',()=>message('BXH đang dùng dữ liệu minh họa, chưa kết nối database.'));
 document.getElementById('logout').addEventListener('click',()=>{stopCamera();showPage('login');message('Đã thoát giao diện demo.')});
 </script>
+  
+<!-- Thư viện kết nối Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  const SUPABASE_URL = "https://yqttjylcetzmstgocjqa.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_5vQTfIeSo79u9cc_Gwcjpg_-BdqgfrW";
+
+  window.drlSupabase = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+  console.log("DRL Scanner đã khởi tạo Supabase.");
+</script>
+
+  
 </body>
 </html>
