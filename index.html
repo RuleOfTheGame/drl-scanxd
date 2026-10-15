@@ -213,7 +213,131 @@ document.getElementById('logout').addEventListener('click',()=>{stopCamera();sho
 
   console.log("DRL Scanner đã khởi tạo Supabase.");
 </script>
-
   
+<div id="email-login-panel" style="max-width:360px;margin:24px auto;padding:20px;border-radius:12px;background:#172033;color:white;font-family:Arial,sans-serif">
+  <h2 style="margin-top:0">DRL Scanner</h2>
+  <p>Đăng nhập bằng email</p>
+
+  <label for="drl-email">Email</label>
+  <input id="drl-email" type="email" autocomplete="email"
+    placeholder="Nhập email"
+    style="display:block;box-sizing:border-box;width:100%;padding:10px;margin:8px 0 14px">
+
+  <label for="drl-password">Mật khẩu</label>
+  <input id="drl-password" type="password" autocomplete="current-password"
+    placeholder="Nhập mật khẩu"
+    style="display:block;box-sizing:border-box;width:100%;padding:10px;margin:8px 0 14px">
+
+  <button id="drl-signup" type="button">Đăng ký</button>
+  <button id="drl-login" type="button">Đăng nhập</button>
+  <button id="drl-logout" type="button" hidden>Đăng xuất</button>
+
+  <p id="drl-auth-message" role="status" aria-live="polite"></p>
+</div>
+
+<script>
+(function () {
+  const client = window.drlSupabase;
+  const message = document.getElementById('drl-auth-message');
+  const emailInput = document.getElementById('drl-email');
+  const passwordInput = document.getElementById('drl-password');
+  const signupButton = document.getElementById('drl-signup');
+  const loginButton = document.getElementById('drl-login');
+  const logoutButton = document.getElementById('drl-logout');
+
+  if (!client) {
+    message.textContent = 'Chưa kết nối được Supabase. Hãy kiểm tra cấu hình.';
+    return;
+  }
+
+  function showMessage(text) {
+    message.textContent = text;
+  }
+
+  async function refreshAuth() {
+    const { data } = await client.auth.getSession();
+    const signedIn = Boolean(data.session);
+
+    signupButton.hidden = signedIn;
+    loginButton.hidden = signedIn;
+    logoutButton.hidden = !signedIn;
+    emailInput.hidden = signedIn;
+    passwordInput.hidden = signedIn;
+
+    if (signedIn) {
+      showMessage('Đã đăng nhập: ' + data.session.user.email);
+    }
+  }
+
+  signupButton.addEventListener('click', async function () {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+
+    if (!email || password.length < 8) {
+      showMessage('Nhập email hợp lệ và mật khẩu ít nhất 8 ký tự.');
+      return;
+    }
+
+    showMessage('Đang đăng ký...');
+    const { data, error } = await client.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: window.location.href
+      }
+    });
+
+    if (error) {
+      showMessage('Đăng ký chưa thành công: ' + error.message);
+      return;
+    }
+
+    if (data.session) {
+      showMessage('Đăng ký thành công.');
+    } else {
+      showMessage('Hãy kiểm tra email để xác nhận tài khoản.');
+    }
+
+    await refreshAuth();
+  });
+
+  loginButton.addEventListener('click', async function () {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+
+    showMessage('Đang đăng nhập...');
+    const { error } = await client.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) {
+      showMessage('Đăng nhập chưa thành công: ' + error.message);
+      return;
+    }
+
+    await refreshAuth();
+  });
+
+  logoutButton.addEventListener('click', async function () {
+    const { error } = await client.auth.signOut();
+
+    if (error) {
+      showMessage('Đăng xuất chưa thành công: ' + error.message);
+      return;
+    }
+
+    showMessage('Bạn đã đăng xuất.');
+    await refreshAuth();
+  });
+
+  client.auth.onAuthStateChange(function () {
+    refreshAuth();
+  });
+
+  refreshAuth();
+})();
+</script>
+
 </body>
 </html>
