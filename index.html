@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DRL Scanner — Demo giao diện</title>
+<style>
+:root{--bg:#101829;--panel:#1a2639;--panel2:#202b3e;--border:#354054;--orange:#ff6845;--text:#f4f6fb;--muted:#9aa9bd;--blue:#5965f2;--green:#36c995}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #ff9a7f;outline-offset:2px}
+.app{min-height:100vh;padding:16px 16px 100px;max-width:1500px;margin:auto}.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:2px 2px 18px}.brand{font-size:clamp(23px,4vw,34px);font-weight:950;font-style:italic;letter-spacing:.5px;color:var(--orange);margin:0}.demo-tag{font-size:12px;color:var(--muted);border:1px solid var(--border);padding:6px 10px;border-radius:99px}
+.page{display:none}.page.active{display:block}.panel{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:20px}.section-title{font-size:20px;margin:0 0 5px}.muted{color:var(--muted)}.primary{background:var(--orange);color:#fff;border:0;border-radius:9px;min-height:48px;padding:12px 16px;font-weight:800;width:100%;transition:filter .15s}.primary:hover{filter:brightness(1.07)}.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:9px;min-height:44px;padding:10px 14px;font-weight:700}.field{display:block;width:100%;min-height:48px;border:1px solid var(--border);border-radius:9px;background:var(--panel2);color:white;padding:12px 14px}.field::placeholder{color:#8995a7}.stack{display:grid;gap:12px}.row{display:flex;gap:10px;align-items:center}.spread{justify-content:space-between}.login-wrap{min-height:72vh;display:grid;place-items:start center;padding-top:16px}.login-card{width:min(100%,360px);text-align:center}.login-card .brand{margin:0 0 34px}.discord{background:var(--blue);color:white;border:0;border-radius:9px;min-height:48px;width:100%;font-weight:800}.or{display:flex;align-items:center;gap:12px;color:var(--muted);margin:26px 0}.or:before,.or:after{content:"";height:1px;background:var(--border);flex:1}
+.scanner-layout{display:grid;grid-template-columns:minmax(260px,450px) minmax(0,1fr);gap:18px;align-items:stretch}.camera-box{background:#030405;border-radius:12px;min-height:330px;aspect-ratio:1/1;max-height:450px;display:grid;place-items:center;overflow:hidden;position:relative;margin:0 auto;width:100%;max-width:450px}.camera-placeholder{text-align:center;color:var(--muted);padding:20px}.camera-placeholder .cam-icon{font-size:54px;line-height:1;color:#24272d;margin-bottom:14px}.camera-box video{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}.scanner-controls{display:flex;flex-direction:column;gap:14px}.segmented{display:grid;grid-template-columns:1fr 1fr;gap:8px}.segmented button{border:1px solid var(--border);background:transparent;color:var(--text);border-radius:8px;min-height:42px;font-weight:750}.segmented button.selected{background:var(--orange);border-color:var(--orange)}.hint{font-size:13px;color:var(--muted);margin:0}.result{padding:12px;border:1px solid var(--border);border-radius:9px;background:#151f30;overflow-wrap:anywhere}.bottom-nav{position:fixed;z-index:5;bottom:0;left:0;right:0;display:flex;justify-content:center;gap:clamp(16px,14vw,220px);align-items:center;min-height:78px;background:rgba(16,24,41,.96);border-top:1px solid #283348;backdrop-filter:blur(12px);padding:8px 14px}.nav-btn{background:none;border:0;color:var(--muted);display:flex;align-items:center;flex-direction:column;gap:3px;min-width:76px;font-size:12px}.nav-btn .nav-icon{font-size:23px}.nav-btn.active{color:var(--orange)}.nav-btn.active .nav-icon{background:var(--orange);color:#fff;border-radius:50%;width:44px;height:44px;display:grid;place-items:center}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.stat{background:var(--panel2);border:1px solid var(--border);padding:16px;border-radius:10px}.stat strong{display:block;font-size:24px;margin-top:6px}.table{width:100%;border-collapse:collapse;margin-top:14px}.table th,.table td{text-align:left;padding:13px 10px;border-bottom:1px solid var(--border)}.table th{font-size:12px;color:var(--muted);font-weight:700}.rank{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--panel2);font-weight:800}.profile-dot{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#303e57;font-weight:800}.settings-group{padding:18px 0;border-bottom:1px solid var(--border)}.settings-group:last-child{border-bottom:0;padding-bottom:0}.settings-group h3{margin:0 0 5px;font-size:16px}.settings-group p{margin:0 0 13px;color:var(--muted);font-size:14px}.switch-row{display:flex;justify-content:space-between;gap:12px;align-items:center}.notice{border:1px solid #68513d;background:#32291f;color:#ffd7b4;border-radius:9px;padding:12px;font-size:13px}.toast{position:fixed;z-index:10;top:15px;left:50%;transform:translateX(-50%);padding:11px 16px;border:1px solid var(--border);background:#202b3e;border-radius:10px;display:none;box-shadow:0 8px 30px #0005;max-width:calc(100vw - 30px)}.toast.show{display:block}
+@media(max-width:760px){.app{padding:10px 10px 94px}.topbar{margin-bottom:12px}.panel{padding:14px}.scanner-layout{grid-template-columns:1fr}.camera-box{min-height:260px;max-height:380px;width:min(100%,380px)}.scanner-controls{gap:12px}.grid2{grid-template-columns:1fr 1fr}.table th,.table td{padding:10px 6px;font-size:13px}.bottom-nav{justify-content:space-around;gap:0}.nav-btn{min-width:64px}.demo-tag{font-size:10px}}
+@media(max-width:390px){.grid2{grid-template-columns:1fr}.camera-box{min-height:230px}}
+</style>
+</head>
+<body>
+<div class="toast" id="toast" role="status"></div>
+<main class="app">
+  <header class="topbar">
+    <h1 class="brand">DRL SCANNER</h1>
+    <span class="demo-tag">BẢN DEMO GIAO DIỆN</span>
+  </header>
+
+  <section id="login" class="page active">
+    <div class="login-wrap">
+      <div class="login-card">
+        <h2 class="brand">DRL SCANNER</h2>
+        <button class="discord" id="discordLogin">◉ Đăng nhập bằng Discord</button>
+        <div class="or">hoặc</div>
+        <form id="loginForm" class="stack">
+          <input class="field" id="username" autocomplete="username" placeholder="Tên đăng nhập" required>
+          <input class="field" id="password" type="password" autocomplete="current-password" placeholder="Mật khẩu" required>
+          <button class="primary" type="submit">Đăng nhập</button>
+        </form>
+        <p class="hint" style="margin-top:18px">Bản demo: nhập thông tin bất kỳ để xem giao diện.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="scanner" class="page">
+    <div class="panel">
+      <div class="scanner-layout">
+        <div class="camera-box" id="cameraBox">
+          <div class="camera-placeholder" id="cameraPlaceholder"><div class="cam-icon">📷</div><div id="cameraText">Chưa khởi động camera</div></div>
+          <video id="video" autoplay playsinline muted hidden></video>
+        </div>
+        <div class="scanner-controls">
+          <div>
+            <h2 class="section-title">Quét mã QR</h2>
+            <p class="muted" style="margin:4px 0 0">Đưa mã QR vào vùng camera để đọc nội dung.</p>
+          </div>
+          <div class="segmented" aria-label="Phạm vi quét">
+            <button class="selected" data-scope="all">Tất cả</button>
+            <button data-scope="self">Chỉ bạn</button>
+          </div>
+          <button class="primary" id="startCamera">▦ QUÉT MÃ NGAY</button>
+          <button class="secondary" id="stopCamera" hidden>Dừng camera</button>
+          <div class="result" id="scanResult"><strong>Kết quả:</strong><p class="hint" style="margin:6px 0 0">Chưa có mã nào được quét.</p></div>
+          <p class="hint">Mã QR được đọc trong bản demo; chưa xác minh điểm danh với hệ thống PTIT.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="leaderboard" class="page">
+    <div class="panel">
+      <div class="row spread" style="margin-bottom:18px"><div><h2 class="section-title">🏆 Bảng xếp hạng</h2><p class="muted" style="margin:4px 0 0">Dữ liệu minh họa cho giao diện.</p></div><button class="secondary" id="refreshBoard">↻ Làm mới</button></div>
+      <div class="grid2">
+        <div class="stat"><span class="muted">Người tham gia</span><strong>128</strong></div>
+        <div class="stat"><span class="muted">Lượt ghi nhận</span><strong>864</strong></div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="table">
+          <thead><tr><th>Hạng</th><th>Người dùng</th><th>Điểm</th></tr></thead>
+          <tbody>
+            <tr><td><span class="rank">1</span></td><td><div class="row"><span class="profile-dot">A</span><span>An Nguyen</span></div></td><td><strong>980</strong></td></tr>
+            <tr><td><span class="rank">2</span></td><td><div class="row"><span class="profile-dot">M</span><span>Minh Tran</span></div></td><td><strong>920</strong></td></tr>
+            <tr><td><span class="rank">3</span></td><td><div class="row"><span class="profile-dot">L</span><span>Linh Pham</span></div></td><td><strong>875</strong></td></tr>
+            <tr><td><span class="rank">4</span></td><td><div class="row"><span class="profile-dot">H</span><span>Hoang Le</span></div></td><td><strong>810</strong></td></tr>
+            <tr><td><span class="rank">5</span></td><td><div class="row"><span class="profile-dot">T</span><span>Thao Vu</span></div></td><td><strong>760</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="hint" style="margin-top:12px">Tên và điểm ở đây là dữ liệu mẫu, không phải dữ liệu người dùng thật.</p>
+    </div>
+  </section>
+
+  <section id="settings" class="page">
+    <div class="panel">
+      <h2 class="section-title">Cài đặt</h2>
+      <p class="muted" style="margin:4px 0 0">Quản lý hồ sơ và tùy chọn ứng dụng.</p>
+      <div class="settings-group">
+        <h3>Hồ sơ</h3><p>Thông tin hiển thị trong ứng dụng.</p>
+        <div class="stack">
+          <label for="displayName" class="hint">Tên hiển thị</label><input id="displayName" class="field" placeholder="Tên của bạn">
+          <label for="displayEmail" class="hint">Email liên hệ (tùy chọn)</label><input id="displayEmail" class="field" type="email" placeholder="email@example.com">
+          <button class="primary" id="saveProfile">Lưu hồ sơ trên trình duyệt</button>
+        </div>
+      </div>
+      <div class="settings-group">
+        <h3>Thông tin PTIT</h3>
+        <p>Cấu hình tích hợp sẽ được bổ sung khi có phương thức API chính thức được cho phép.</p>
+        <div class="notice">Để bảo vệ tài khoản, bản demo không yêu cầu hoặc lưu mật khẩu PTIT. Không nhập mật khẩu thật vào bản giao diện thử nghiệm.</div>
+        <div class="row spread" style="margin-top:14px"><span><strong>Trạng thái tích hợp</strong><br><span class="hint">Chưa thiết lập</span></span><span class="demo-tag">Chưa kết nối</span></div>
+      </div>
+      <div class="settings-group">
+        <h3>Tùy chọn quét</h3><p>Các tùy chọn chỉ áp dụng trong bản demo hiện tại.</p>
+        <label class="switch-row"><span>Hiện thông báo khi đọc được QR</span><input type="checkbox" id="notifyScan" checked></label>
+      </div>
+      <div class="settings-group">
+        <h3>Tài khoản</h3><p id="accountText">Bạn đang dùng chế độ demo.</p><button class="secondary" id="logout">Đăng xuất khỏi bản demo</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<nav class="bottom-nav" id="bottomNav" hidden aria-label="Điều hướng chính">
+  <button class="nav-btn" data-page="leaderboard"><span class="nav-icon">🏆</span><span>BXH</span></button>
+  <button class="nav-btn active" data-page="scanner"><span class="nav-icon">▦</span><span>Quét mã</span></button>
+  <button class="nav-btn" data-page="settings"><span class="nav-icon">⚙</span><span>Cài đặt</span></button>
+</nav>
+<script>
+const pages = [...document.querySelectorAll('.page')];
+const nav = document.getElementById('bottomNav');
+const toast = document.getElementById('toast');
+let stream = null;
+let scanTimer = null;
+let scope = 'all';
+function message(text){toast.textContent=text;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),2800)}
+function showPage(id){
+  pages.forEach(p=>p.classList.toggle('active',p.id===id));
+  nav.hidden = id==='login';
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
+  if(id!=='scanner') stopCamera();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.getElementById('loginForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const name=document.getElementById('username').value.trim();
+  if(!name)return;
+  document.getElementById('accountText').textContent=`Đang xem với tên demo: ${name}. Chưa có tài khoản thật được xác thực.`;
+  document.getElementById('displayName').value=name;
+  showPage('scanner');message('Đã mở giao diện demo. Chưa đăng nhập máy chủ.');
+});
+document.getElementById('discordLogin').addEventListener('click',()=>message('Đăng nhập Discord chưa được kết nối. Cần cấu hình OAuth2 ở backend.'));
+document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+document.querySelectorAll('[data-scope]').forEach(b=>b.addEventListener('click',()=>{
+  scope=b.dataset.scope;document.querySelectorAll('[data-scope]').forEach(x=>x.classList.toggle('selected',x===b));
+  message(scope==='all'?'Đã chọn phạm vi: Tất cả':'Đã chọn phạm vi: Chỉ bạn');
+}));
+async function stopCamera(){
+  if(scanTimer){clearInterval(scanTimer);scanTimer=null}
+  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}
+  const video=document.getElementById('video');video.srcObject=null;video.hidden=true;
+  document.getElementById('cameraPlaceholder').hidden=false;
+  document.getElementById('cameraText').textContent='Chưa khởi động camera';
+  document.getElementById('startCamera').hidden=false;
+  document.getElementById('stopCamera').hidden=true;
+}
+document.getElementById('stopCamera').addEventListener('click',stopCamera);
+document.getElementById('startCamera').addEventListener('click',async()=>{
+  if(!('mediaDevices' in navigator)||!navigator.mediaDevices.getUserMedia){message('Trình duyệt không hỗ trợ camera hoặc trang chưa chạy qua HTTPS/localhost.');return}
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
+    const video=document.getElementById('video');video.srcObject=stream;video.hidden=false;
+    document.getElementById('cameraPlaceholder').hidden=true;
+    document.getElementById('startCamera').hidden=true;document.getElementById('stopCamera').hidden=false;
+    await video.play();
+    if('BarcodeDetector' in window){
+      let detector;
+      try{detector=new BarcodeDetector({formats:['qr_code']})}catch(e){}
+      if(detector){
+        scanTimer=setInterval(async()=>{
+          if(!video.videoWidth)return;
+          try{
+            const codes=await detector.detect(video);
+            if(codes.length){
+              const value=codes[0].rawValue;
+              document.getElementById('scanResult').innerHTML='<strong>Đã đọc nội dung QR:</strong><p class="hint" style="margin:6px 0 0;overflow-wrap:anywhere"></p>';
+              document.querySelector('#scanResult p').textContent=value;
+              await stopCamera();
+              if(document.getElementById('notifyScan').checked)message('Đã đọc QR. Nội dung chưa được xác minh điểm danh.');
+            }
+          }catch(e){}
+        },500);
+      }else document.getElementById('cameraText').textContent='Camera đã bật — trình duyệt chưa hỗ trợ đọc QR tích hợp.';
+    }else message('Camera đã bật. Để đọc QR trên trình duyệt này, cần tích hợp thư viện đọc mã.');
+  }catch(e){message('Không mở được camera. Hãy cấp quyền camera và dùng HTTPS hoặc localhost.')}
+});
+document.getElementById('saveProfile').addEventListener('click',()=>{
+  try{
+    localStorage.setItem('drl-demo-profile',JSON.stringify({name:document.getElementById('displayName').value,email:document.getElementById('displayEmail').value}));
+    message('Đã lưu hồ sơ demo trên trình duyệt này.');
+  }catch(e){message('Không thể lưu trong trình duyệt.')}
+});
+try{const saved=JSON.parse(localStorage.getItem('drl-demo-profile')||'null');if(saved){document.getElementById('displayName').value=saved.name||'';document.getElementById('displayEmail').value=saved.email||''}}catch(e){}
+document.getElementById('refreshBoard').addEventListener('click',()=>message('BXH đang dùng dữ liệu minh họa, chưa kết nối database.'));
+document.getElementById('logout').addEventListener('click',()=>{stopCamera();showPage('login');message('Đã thoát giao diện demo.')});
+</script>
+</body>
+</html>
